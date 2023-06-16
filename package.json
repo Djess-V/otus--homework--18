@@ -1,8 +1,8 @@
 {
   "name": "router_by_djess-v",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple JS router",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
@@ -11,8 +11,16 @@
     "build": "webpack --mode production"
   },
   "keywords": [],
-  "author": "Ageevets Evgeniy",
-  "license": "ISC",
+  "author": "Djess-V",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Djess-V/otus--homework--18.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Djess-V/otus--homework--18/issues"
+  },
+  "homepage": "https://github.com/Djess-V/otus--homework--18#readme",
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
