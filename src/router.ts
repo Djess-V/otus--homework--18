@@ -1,3 +1,5 @@
+import { v4 } from "uuid";
+
 export interface IArgs {
   currentPath: string;
   previousPath: string | null;
@@ -14,7 +16,7 @@ interface IHooks {
   onBeforeEnter?: IHook;
 }
 interface IListener {
-  id: number;
+  id: string;
   match: IMatch;
   hooks: IHooks;
 }
@@ -22,18 +24,22 @@ interface IListener {
 interface IRouter {
   on: (match: IMatch, hooks?: IHooks) => () => void;
   go: (url: string, state: IState) => void;
+  unsubscribeAll: () => void;
 }
 
-export class Router implements IRouter {
+class Router implements IRouter {
   private listeners: IListener[] = [];
 
-  private previousPath: string | null = null;
+  private previousPath: string;
+
+  private currentPath: string;
 
   private mode: "history" | "hash";
 
   constructor(mode: "history" | "hash" = "history") {
     this.mode = mode;
     this.previousPath = this.getPath();
+    this.currentPath = this.getPath();
     this.init();
   }
 
@@ -58,12 +64,22 @@ export class Router implements IRouter {
 
   private init = () => {
     if (this.mode === "history") {
-      window.addEventListener("popstate", this.handlePopState.bind(this));
+      window.addEventListener("popstate", this.bindHandlePopState);
     } else if (this.mode === "hash") {
-      window.addEventListener("hashchange", this.handleHashChange.bind(this));
+      window.addEventListener("hashchange", this.bindHandleHashChange);
     }
 
-    document.body.addEventListener("click", this.handleClick.bind(this));
+    document.body.addEventListener("click", this.bindHandleClick);
+  };
+
+  unsubscribeAll = () => {
+    if (this.mode === "history") {
+      window.removeEventListener("popstate", this.bindHandlePopState);
+    } else if (this.mode === "hash") {
+      window.removeEventListener("hashchange", this.bindHandleHashChange);
+    }
+
+    document.body.removeEventListener("click", this.bindHandleClick);
   };
 
   private getPath = (): string =>
@@ -71,22 +87,7 @@ export class Router implements IRouter {
       ? window.location.hash === ""
         ? "/"
         : window.location.hash.slice(1)
-      : window.location.pathname;
-
-  private currentPath: string = this.getPath();
-
-  private generateId = (): number => {
-    const getRandomNumber = () =>
-      Math.floor(Math.random() * this.listeners.length * 1000);
-    const doesExist = (id: number) =>
-      this.listeners.find((listener) => listener.id === id);
-
-    let id = getRandomNumber();
-    while (doesExist(id)) {
-      id = getRandomNumber();
-    }
-    return id;
-  };
+      : window.location.pathname + window.location.search;
 
   private handleListener = async (
     { match, hooks }: IListener,
@@ -100,11 +101,7 @@ export class Router implements IRouter {
       state: argsState,
     };
 
-    if (
-      this.previousPath &&
-      Router.isMatch(match, this.previousPath) &&
-      hooks.onLeave
-    ) {
+    if (Router.isMatch(match, this.previousPath) && hooks.onLeave) {
       await hooks.onLeave(args);
       return;
     }
@@ -141,7 +138,7 @@ export class Router implements IRouter {
   };
 
   on = (match: IMatch, hooks: IHooks = {}): (() => void) => {
-    const id = this.generateId();
+    const id = v4();
 
     const listener = { id, match, hooks };
     this.listeners.push(listener);
@@ -174,11 +171,15 @@ export class Router implements IRouter {
     this.go(url);
   };
 
+  private bindHandleClick = this.handleClick.bind(this);
+
   private handlePopState = () => {
     this.previousPath = this.currentPath;
     this.currentPath = this.getPath();
     this.handleAllListeners(this.previousPath, this.currentPath, {});
   };
+
+  private bindHandlePopState = this.handlePopState.bind(this);
 
   private handleHashChange = () => {
     if (this.currentPath === this.getPath()) {
@@ -188,4 +189,8 @@ export class Router implements IRouter {
     this.currentPath = this.getPath();
     this.handleAllListeners(this.previousPath, this.currentPath, {});
   };
+
+  private bindHandleHashChange = this.handleHashChange.bind(this);
 }
+
+export { Router };

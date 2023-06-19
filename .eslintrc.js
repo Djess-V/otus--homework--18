@@ -33,5 +33,6 @@ module.exports = {
     "no-param-reassign": "off",
     "no-nested-ternary": "off",
     "no-console": "off",
+    "no-promise-executor-return": "off",
   },
 };
