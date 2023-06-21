@@ -1,5 +1,11 @@
 import { Router, IArgs } from "../src/router";
 
+if (PRODUCTION) {
+  document.querySelectorAll("a").forEach((link) => {
+    link.href = PREFIX + link.pathname;
+  });
+}
+
 const createRender =
   (content: string) =>
   (...args: IArgs[]) => {
@@ -45,7 +51,7 @@ const connectHooks = (router: Router) => {
     setTimeout(() => {
       unsubscribe();
       console.log(
-        `Произведена отписка от выполнения хуков при последующих кликах на ссылку - '/contacts'`
+        `------  Произведена отписка от выполнения хуков при последующих кликах на ссылку - '/contacts'  ------`
       );
     }, 0);
 

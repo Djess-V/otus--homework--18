@@ -26,6 +26,12 @@ module.exports = {
         endOfLine: "auto",
       },
     ],
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        packageDir: "./",
+      },
+    ],
     "import/extensions": ["warn", { ts: "never" }],
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/no-explicit-any": "off",
