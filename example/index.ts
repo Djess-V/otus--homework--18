@@ -1,11 +1,5 @@
 import { Router, IArgs } from "../src/router";
 
-if (PRODUCTION) {
-  document.querySelectorAll("a").forEach((link) => {
-    link.href = PREFIX + link.pathname;
-  });
-}
-
 const createRender =
   (content: string) =>
   (...args: IArgs[]) => {
@@ -25,24 +19,30 @@ const createLogger =
     console.log(`${content} args=${JSON.stringify(args)}`);
   };
 
-const connectHooks = (router: Router) => {
-  router.on(new RegExp(`^${PREFIX}/$`), {
-    onEnter: createRender(`${PREFIX}/`),
+const connectHooks = (router: Router, mode: "hash" | "history") => {
+  let prefix = PREFIX;
+
+  if (PRODUCTION && mode === "hash") {
+    prefix = "";
+  }
+
+  router.on(new RegExp(`^${prefix}/$`), {
+    onEnter: createRender(`${prefix}/`),
   });
-  const unsubscribe = router.on((path) => path === `${PREFIX}/contacts`, {
-    onEnter: createRender(`${PREFIX}/contacts`),
-    onBeforeEnter: drawInfo(`[onBeforeEnter] ${PREFIX}contacts`),
+  const unsubscribe = router.on((path) => path === `${prefix}/contacts`, {
+    onEnter: createRender(`${prefix}/contacts`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] ${prefix}/contacts`),
   });
-  router.on(`${PREFIX}/about`, {
-    onEnter: createRender(`${PREFIX}/about`),
-    onLeave: createLogger(`[onLeave] ${PREFIX}/about`),
+  router.on(`${prefix}/about`, {
+    onEnter: createRender(`${prefix}/about`),
+    onLeave: createLogger(`[onLeave] ${prefix}/about`),
   });
-  router.on(`${PREFIX}/about/us`, {
-    onEnter: createRender(`${PREFIX}/about/us`),
+  router.on(`${prefix}/about/us`, {
+    onEnter: createRender(`${prefix}/about/us`),
   });
-  router.on(new RegExp(`^${PREFIX}/login$`), {
-    onEnter: createRender(`${PREFIX}/login`),
-    onBeforeEnter: drawInfo(`[onBeforeEnter] ${PREFIX}login`),
+  router.on(new RegExp(`^${prefix}/login$`), {
+    onEnter: createRender(`${prefix}/login`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] ${prefix}/login`),
   });
 
   const contacts = document.getElementById("contacts");
@@ -70,7 +70,7 @@ const connectRouter = (mode: "hash" | "history") => {
   nav.style.display = "flex";
   root.style.display = "";
 
-  connectHooks(new Router(mode));
+  connectHooks(new Router(mode), mode);
 };
 
 window.addEventListener("load", () => {
@@ -80,6 +80,14 @@ window.addEventListener("load", () => {
 
   links.forEach((link) =>
     link.addEventListener("click", () => {
+      if (link.dataset.id === "history") {
+        if (PRODUCTION) {
+          document.querySelectorAll("a").forEach((ref) => {
+            ref.href = PREFIX + ref.pathname;
+          });
+        }
+      }
+
       connectRouter(link.dataset.id as "hash" | "history");
 
       links.forEach((a) => {
