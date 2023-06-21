@@ -20,34 +20,29 @@ const createLogger =
   };
 
 const connectHooks = (router: Router, mode: "hash" | "history") => {
-  let prefixHref = PREFIX;
-  let prefixForHooks = PREFIX;
+  let prefix = PREFIX;
 
   if (PRODUCTION && mode === "hash") {
-    prefixHref = "";
+    prefix = "";
   }
 
-  if (PRODUCTION && mode === "history") {
-    prefixForHooks = "";
-  }
-
-  router.on(new RegExp(`^${prefixHref}/$`), {
-    onEnter: createRender(`${prefixForHooks}/`),
+  router.on(new RegExp(`^${prefix}/$`), {
+    onEnter: createRender(`/`),
   });
-  const unsubscribe = router.on((path) => path === `${prefixHref}/contacts`, {
-    onEnter: createRender(`${prefixForHooks}/contacts`),
-    onBeforeEnter: drawInfo(`[onBeforeEnter] ${prefixForHooks}/contacts`),
+  const unsubscribe = router.on((path) => path === `${prefix}/contacts`, {
+    onEnter: createRender(`/contacts`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] /contacts`),
   });
-  router.on(`${prefixHref}/about`, {
-    onEnter: createRender(`${prefixForHooks}/about`),
-    onLeave: createLogger(`[onLeave] ${prefixForHooks}/about`),
+  router.on(`${prefix}/about`, {
+    onEnter: createRender(`/about`),
+    onLeave: createLogger(`[onLeave] /about`),
   });
-  router.on(`${prefixHref}/about/us`, {
-    onEnter: createRender(`${prefixForHooks}/about/us`),
+  router.on(`${prefix}/about/us`, {
+    onEnter: createRender(`/about/us`),
   });
-  router.on(new RegExp(`^${prefixHref}/login$`), {
-    onEnter: createRender(`${prefixForHooks}/login`),
-    onBeforeEnter: drawInfo(`[onBeforeEnter] ${prefixForHooks}/login`),
+  router.on(new RegExp(`^${prefix}/login$`), {
+    onEnter: createRender(`/login`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] /login`),
   });
 
   const contacts = document.getElementById("contacts");
