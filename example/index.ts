@@ -26,21 +26,23 @@ const createLogger =
   };
 
 const connectHooks = (router: Router) => {
-  router.on(/^\/$/, {
-    onEnter: createRender("/"),
+  router.on(new RegExp(`^${PREFIX}/$`), {
+    onEnter: createRender(`${PREFIX}/`),
   });
-  const unsubscribe = router.on((path) => path === "/contacts", {
-    onEnter: createRender("/contacts"),
-    onBeforeEnter: drawInfo("[onBeforeEnter] contacts"),
+  const unsubscribe = router.on((path) => path === `${PREFIX}/contacts`, {
+    onEnter: createRender(`${PREFIX}/contacts`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] ${PREFIX}contacts`),
   });
-  router.on("/about", {
-    onEnter: createRender("/about"),
-    onLeave: createLogger("[onLeave] /about"),
+  router.on(`${PREFIX}/about`, {
+    onEnter: createRender(`${PREFIX}/about`),
+    onLeave: createLogger(`[onLeave] ${PREFIX}/about`),
   });
-  router.on("/about/us", { onEnter: createRender("/about/us") });
-  router.on(/^\/login$/, {
-    onEnter: createRender("/login"),
-    onBeforeEnter: drawInfo("[onBeforeEnter] login"),
+  router.on(`${PREFIX}/about/us`, {
+    onEnter: createRender(`${PREFIX}/about/us`),
+  });
+  router.on(new RegExp(`^${PREFIX}/login$`), {
+    onEnter: createRender(`${PREFIX}/login`),
+    onBeforeEnter: drawInfo(`[onBeforeEnter] ${PREFIX}login`),
   });
 
   const contacts = document.getElementById("contacts");
