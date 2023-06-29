@@ -28,6 +28,7 @@ const connectHooks = (router: Router, mode: "hash" | "history") => {
 
   router.on(new RegExp(`^${prefix}/$`), {
     onEnter: createRender(`/`),
+    onLeave: createLogger(`[onLeave] /`),
   });
   const unsubscribe = router.on((path) => path === `${prefix}/contacts`, {
     onEnter: createRender(`/contacts`),

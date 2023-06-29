@@ -6,22 +6,22 @@ export interface IArgs {
   state: Record<string, any>;
 }
 
-type IState = Record<string, any>;
-type IMatch = RegExp | string | ((path: string) => boolean);
-type IHook = (...args: IArgs[]) => Promise<any> | any;
+export type IState = Record<string, any>;
+export type IMatch = RegExp | string | ((path: string) => boolean);
+export type IHook = (...args: IArgs[]) => Promise<any> | any;
 
-interface IHooks {
+export interface IHooks {
   onEnter?: IHook;
   onLeave?: IHook;
   onBeforeEnter?: IHook;
 }
-interface IListener {
+export interface IListener {
   id: string;
   match: IMatch;
   hooks: IHooks;
 }
 
-interface IRouter {
+export interface IRouter {
   on: (match: IMatch, hooks?: IHooks) => () => void;
   go: (url: string, state: IState) => void;
   unsubscribeAll: () => void;
@@ -30,7 +30,7 @@ interface IRouter {
 class Router implements IRouter {
   private listeners: IListener[] = [];
 
-  private previousPath: string;
+  private previousPath: string | null = null;
 
   private currentPath: string;
 
@@ -38,7 +38,6 @@ class Router implements IRouter {
 
   constructor(mode: "history" | "hash" = "history") {
     this.mode = mode;
-    this.previousPath = this.getPath();
     this.currentPath = this.getPath();
     this.init();
   }
@@ -101,7 +100,11 @@ class Router implements IRouter {
       state: argsState,
     };
 
-    if (Router.isMatch(match, this.previousPath) && hooks.onLeave) {
+    if (
+      this.previousPath &&
+      Router.isMatch(match, this.previousPath) &&
+      hooks.onLeave
+    ) {
       await hooks.onLeave(args);
       return;
     }

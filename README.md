@@ -16,42 +16,50 @@ Typing
 
 ```bash
 export interface IArgs {
-  currentPath: string;
-  previousPath: string | null;
-  state: Record<string, any>;
+    currentPath: string;
+    previousPath: string | null;
+    state: Record<string, any>;
 }
-
-type IState = Record<string, any>;
-type IMatch = RegExp | string | ((path: string) => boolean);
-type IHook = (...args: IArgs[]) => Promise<any> | any;
-
-interface IHooks {
-  onEnter?: IHook;
-  onLeave?: IHook;
-  onBeforeEnter?: IHook;
+export type IState = Record<string, any>;
+export type IMatch = RegExp | string | ((path: string) => boolean);
+export type IHook = (...args: IArgs[]) => Promise<any> | any;
+export interface IHooks {
+    onEnter?: IHook;
+    onLeave?: IHook;
+    onBeforeEnter?: IHook;
 }
-interface IListener {
-  id: string;
-  match: IMatch;
-  hooks: IHooks;
+export interface IListener {
+    id: string;
+    match: IMatch;
+    hooks: IHooks;
 }
-
-interface IRouter {
-  on: (match: IMatch, hooks?: IHooks) => () => void;
-  go: (url: string, state: IState) => void;
-  unsubscribeAll: () => void;
+export interface IRouter {
+    on: (match: IMatch, hooks?: IHooks) => () => void;
+    go: (url: string, state: IState) => void;
+    unsubscribeAll: () => void;
 }
-
-class Router implements IRouter {
-  private listeners: IListener[] = [];
-
-  private previousPath: string;
-
-  private currentPath: string;
-
-  private mode: "history" | "hash";
-
-  constructor(mode: "history" | "hash" = "history") {}
+declare class Router implements IRouter {
+    private listeners;
+    private previousPath;
+    private currentPath;
+    private mode;
+    constructor(mode?: "history" | "hash");
+    static isMatch: (match: IMatch, path: string) => boolean;
+    static getQueryParams: () => IState;
+    private init;
+    unsubscribeAll: () => void;
+    private getPath;
+    private handleListener;
+    private handleAllListeners;
+    on: (match: IMatch, hooks?: IHooks) => (() => void);
+    go: (url: string, state?: IState) => void;
+    private handleClick;
+    private bindHandleClick;
+    private handlePopState;
+    private bindHandlePopState;
+    private handleHashChange;
+    private bindHandleHashChange;
+}
 ```
 
 Using
@@ -61,8 +69,9 @@ const router = new Router();
 
 router.on("/", {
   onEnter: () => {
-    //your code
+    // your code
   },
+  // other hooks
 });
 ```
 

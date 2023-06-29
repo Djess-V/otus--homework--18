@@ -37,7 +37,7 @@ describe("Router", () => {
     });
 
     expect(log).toBeCalledWith(
-      `/ args=[{"currentPath":"/","previousPath":"/","state":{}}]`
+      `/ args=[{"currentPath":"/","previousPath":null,"state":{}}]`
     );
 
     const root = document.getElementById("root");
@@ -68,6 +68,8 @@ describe("Router", () => {
       expect(log).toBeCalledTimes(1);
 
       document.body.dispatchEvent(new window.Event("click"));
+
+      expect(log).toBeCalledTimes(1);
 
       const root = document.getElementById("root");
       const contacts = document.getElementById("contacts");
