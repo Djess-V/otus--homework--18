@@ -91,7 +91,8 @@ class Router implements IRouter {
   private handleListener = async (
     { match, hooks }: IListener,
     currentPath: string,
-    state: IState = {}
+    state: IState = {},
+    callHookOnLeave = false
   ) => {
     const argsState = { ...state, ...Router.getQueryParams() };
     const args = {
@@ -101,6 +102,7 @@ class Router implements IRouter {
     };
 
     if (
+      callHookOnLeave &&
       this.previousPath &&
       Router.isMatch(match, this.previousPath) &&
       hooks.onLeave
@@ -128,7 +130,7 @@ class Router implements IRouter {
     );
 
     if (prevListener) {
-      this.handleListener(prevListener, path, state);
+      this.handleListener(prevListener, path, state, true);
     }
 
     const currentListener = this.listeners.find((listener) =>

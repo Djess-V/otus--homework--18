@@ -1,11 +1,11 @@
 {
   "name": "@djess-v/router",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simple JS router",
-  "main": "./publish/router.js",
+  "main": "./src/router.js",
   "files": [
-    "./publish/router.js",
-    "./publish/router.d.ts"
+    "./router.js",
+    "./router.d.ts"
   ],
   "scripts": {
     "test": "jest",
